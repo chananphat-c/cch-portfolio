@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Name — Solution Engineer</title>
+<title>Chananphat — Solution Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -128,6 +128,49 @@
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 200px; }
   h2 { font-size: 1.75rem; font-weight: 500; margin-bottom: 1rem; }
 
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(26,86,219,0.08), transparent 70%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .stat-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .stat-card:hover::before { opacity: 1; }
+  .stat-num {
+    display: block;
+    font-size: 2.75rem; font-weight: 600;
+    color: var(--accent2);
+    font-family: var(--mono);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-suffix {
+    font-size: 2rem; font-weight: 600;
+    color: var(--accent2); font-family: var(--mono);
+    vertical-align: super;
+  }
+  .stat-unit {
+    display: block;
+    font-size: 12px; color: var(--muted);
+    margin-top: 8px; letter-spacing: 0.03em;
+  }
+
   /* SKILLS */
   .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; }
   .skill-chip {
@@ -248,7 +291,7 @@
 <body>
 
 <nav>
-  <span class="nav-logo">YN.dev</span>
+  <span class="nav-logo">CCH.dev</span>
   <div class="nav-links">
     <a href="#about" data-en="About" data-th="เกี่ยวกับ">About</a>
     <a href="#services" data-en="Services" data-th="บริการ">Services</a>
@@ -263,8 +306,11 @@
 
 <!-- HERO -->
 <div class="hero">
+  <div style="margin-bottom:1.5rem;opacity:0;animation:fadeUp 0.6s 0.1s forwards;">
+    <img src="photo.png" alt="Chananphat" style="width:90px;height:90px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--accent);box-shadow:0 0 24px rgba(26,86,219,0.3);">
+  </div>
   <p class="hero-eyebrow">// hello world</p>
-  <h1 class="hero-name">Your Name</h1>
+  <h1 class="hero-name">Chananphat C.</h1>
   <p class="hero-title">
     <span id="typed-text"></span><span class="typing-cursor"></span>
   </p>
@@ -272,8 +318,8 @@
     <span class="avail-dot"></span>
     <span data-en="Available for freelance projects" data-th="รับงาน freelance อยู่ตอนนี้">Available for freelance projects</span>
   </div>
-  <p class="hero-desc" data-en="Solution Engineer with 5+ years bridging the gap between business needs and technical reality. I design systems that scale, integrate platforms that talk to each other, and turn complex requirements into clean solutions." data-th="Solution Engineer ประสบการณ์ 5+ ปี เชี่ยวชาญด้านการออกแบบระบบ เชื่อมต่อแพลตฟอร์ม และแปลงความต้องการทางธุรกิจให้กลายเป็นโซลูชันที่ใช้งานได้จริง">
-    Solution Engineer with 5+ years bridging the gap between business needs and technical reality. I design systems that scale, integrate platforms that talk to each other, and turn complex requirements into clean solutions.
+  <p class="hero-desc" data-en="Solution Engineer with 7+ years of experience across enterprise systems, eCommerce, healthcare tech, and data analytics. I install, configure, and deliver high-quality solutions — then make sure clients actually know how to use them." data-th="Solution Engineer ประสบการณ์กว่า 7 ปี ครอบคลุม enterprise systems, eCommerce, healthcare tech และ data analytics ออกแบบและส่งมอบโซลูชันคุณภาพสูง พร้อมให้ training และ support ลูกค้าจนใช้งานได้จริง">
+    Solution Engineer with 7+ years of experience across enterprise systems, eCommerce, healthcare tech, and data analytics. I install, configure, and deliver high-quality solutions — then make sure clients actually know how to use them.
   </p>
   <div class="hero-cta">
     <a href="#contact" class="btn-primary" data-en="Hire me" data-th="ว่าจ้างฉัน">Hire me</a>
@@ -285,24 +331,46 @@
 <section id="about">
   <p class="section-label reveal" data-en="Skills & stack" data-th="ทักษะและเครื่องมือ">Skills & stack</p>
   <div class="skills-grid reveal">
-    <span class="skill-chip">Python</span>
-    <span class="skill-chip">Node.js</span>
-    <span class="skill-chip">REST API</span>
-    <span class="skill-chip">GraphQL</span>
     <span class="skill-chip">System Integration</span>
     <span class="skill-chip">Solution Architecture</span>
-    <span class="skill-chip">AWS</span>
-    <span class="skill-chip">Docker</span>
-    <span class="skill-chip">Kubernetes</span>
-    <span class="skill-chip">PostgreSQL</span>
-    <span class="skill-chip">MongoDB</span>
-    <span class="skill-chip">CI/CD</span>
     <span class="skill-chip">Technical Consulting</span>
-    <span class="skill-chip">Microservices</span>
+    <span class="skill-chip">Customer Success</span>
+    <span class="skill-chip">eCommerce</span>
+    <span class="skill-chip">REST API</span>
+    <span class="skill-chip">JIRA & Confluence</span>
+    <span class="skill-chip">Google Analytics</span>
+    <span class="skill-chip">GIS / ArcGIS</span>
+    <span class="skill-chip">Data Analysis</span>
+    <span class="skill-chip">System Administration</span>
+    <span class="skill-chip">Training & Onboarding</span>
+    <span class="skill-chip">Project Documentation</span>
+    <span class="skill-chip">SaaS Support</span>
   </div>
 </section>
 
-<!-- SERVICES -->
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <p class="section-label reveal" data-en="Key Achievements" data-th="ผลงานที่ภาคภูมิใจ">Key Achievements</p>
+  <div class="stats-grid reveal">
+    <div class="stat-card">
+      <span class="stat-num" data-target="9">0</span>
+      <span class="stat-unit" data-en="Years in Tech" data-th="ปีในวงการเทค">Years in Tech</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" data-target="5">0</span>
+      <span class="stat-unit" data-en="Enterprise Projects" data-th="โปรเจกต์องค์กร">Enterprise Projects</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" data-target="30">0</span>
+      <span class="stat-unit" data-en="SME Projects" data-th="โปรเจกต์ SME">SME Projects</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" data-target="9000">0</span>
+      <span class="stat-suffix">+</span>
+      <span class="stat-unit" data-en="Users Impacted" data-th="ผู้ใช้งานที่ได้รับผล">Users Impacted</span>
+    </div>
+  </div>
+</section>
 <section id="services">
   <p class="section-label reveal" data-en="What I do" data-th="บริการที่รับ">What I do</p>
   <div class="services-grid">
@@ -333,33 +401,55 @@
       <div class="exp-meta">
         <div>
           <p class="exp-role" data-en="Solution Engineer" data-th="Solution Engineer">Solution Engineer</p>
-          <p class="exp-company">Company Name Co., Ltd.</p>
+          <p class="exp-company">Factorytalk · Full-time</p>
         </div>
-        <span class="exp-date">2022 – Present</span>
+        <span class="exp-date">Apr 2024 – Present</span>
       </div>
-      <p class="exp-desc" data-en="Led end-to-end solution design for enterprise clients across fintech and logistics. Integrated 10+ third-party systems and reduced time-to-deploy by 40%." data-th="ออกแบบโซลูชันครบวงจรสำหรับลูกค้าองค์กร ทั้งในอุตสาหกรรม fintech และ logistics เชื่อมต่อระบบ third-party กว่า 10 ระบบ และลด time-to-deploy ได้ 40%">Led end-to-end solution design for enterprise clients across fintech and logistics. Integrated 10+ third-party systems and reduced time-to-deploy by 40%.</p>
+      <p class="exp-desc" data-en="Lead and participate in delivering high-quality system solutions for enterprise clients. Responsible for installation, configuration, testing, and customer training. Track project progress, maintain documentation, and coordinate with PMs and stakeholders to ensure on-time delivery." data-th="นำและมีส่วนร่วมในการส่งมอบระบบคุณภาพสูงให้ลูกค้าองค์กร รับผิดชอบการติดตั้ง ตั้งค่า ทดสอบ และอบรมลูกค้า ติดตามความคืบหน้าโปรเจกต์ จัดทำเอกสาร และประสานงานกับ PM และผู้มีส่วนเกี่ยวข้อง">Lead and participate in delivering high-quality system solutions for enterprise clients. Responsible for installation, configuration, testing, and customer training. Track project progress, maintain documentation, and coordinate with PMs and stakeholders to ensure on-time delivery.</p>
     </div>
     <div class="exp-item">
       <span class="exp-dot"></span>
       <div class="exp-meta">
         <div>
-          <p class="exp-role" data-en="Software Engineer" data-th="Software Engineer">Software Engineer</p>
-          <p class="exp-company">Previous Company Co., Ltd.</p>
+          <p class="exp-role" data-en="Customer Success & Support" data-th="Customer Success & Support">Customer Success & Support</p>
+          <p class="exp-company">SENESTIA · Full-time</p>
         </div>
-        <span class="exp-date">2019 – 2022</span>
+        <span class="exp-date">May 2023 – Nov 2023</span>
       </div>
-      <p class="exp-desc" data-en="Built backend services and APIs for fintech products serving 50,000+ users. Owned the payment integration layer end-to-end." data-th="พัฒนา backend services และ API สำหรับผลิตภัณฑ์ fintech ที่มีผู้ใช้งานกว่า 50,000 คน รับผิดชอบ payment integration ทั้งระบบ">Built backend services and APIs for fintech products serving 50,000+ users. Owned the payment integration layer end-to-end.</p>
+      <p class="exp-desc" data-en="Collaborated with doctors and nurses to enhance healthcare delivery through technology. Set goals, tracked progress, and improved customer experience using Confluence & JIRA. Successfully trained OPD Care Application courses, achieving 90%+ of hospital expectations." data-th="ทำงานร่วมกับแพทย์และพยาบาลเพื่อพัฒนาการให้บริการสุขภาพผ่านเทคโนโลยี ตั้งเป้าหมาย ติดตามความคืบหน้า และพัฒนาประสบการณ์ลูกค้าผ่าน Confluence & JIRA ฝึกอบรม OPD Care Application สำเร็จ 90%+ ตามความคาดหวังของโรงพยาบาล">Collaborated with doctors and nurses to enhance healthcare delivery through technology. Set goals, tracked progress, and improved customer experience using Confluence & JIRA. Successfully trained OPD Care Application courses, achieving 90%+ of hospital expectations.</p>
     </div>
     <div class="exp-item">
       <span class="exp-dot"></span>
       <div class="exp-meta">
         <div>
-          <p class="exp-role" data-en="Junior Developer" data-th="Junior Developer">Junior Developer</p>
-          <p class="exp-company">First Company Co., Ltd.</p>
+          <p class="exp-role" data-en="Technical Operation Officer" data-th="Technical Operation Officer">Technical Operation Officer</p>
+          <p class="exp-company">Muze Innovation · Full-time</p>
         </div>
-        <span class="exp-date">2018 – 2019</span>
+        <span class="exp-date">Jan 2021 – May 2023</span>
       </div>
-      <p class="exp-desc" data-en="Developed internal tools and automation scripts that saved the team 20+ hours per week." data-th="พัฒนา internal tools และ automation scripts ที่ช่วยประหยัดเวลาให้ทีมกว่า 20 ชั่วโมงต่อสัปดาห์">Developed internal tools and automation scripts that saved the team 20+ hours per week.</p>
+      <p class="exp-desc" data-en="Provided 1st & 2nd level support for OneSiam SuperApp eCommerce platform. Collaborated with dev teams and 3rd-party vendors to troubleshoot and resolve issues. Supported a fast-changing eCommerce ecosystem across social media and marketplaces." data-th="ให้การสนับสนุนระดับ 1 และ 2 สำหรับแพลตฟอร์ม eCommerce OneSiam SuperApp ประสานงานกับทีม dev และ vendor ในการแก้ไขปัญหา พร้อมรองรับ eCommerce ecosystem ที่เปลี่ยนแปลงรวดเร็ว">Provided 1st & 2nd level support for OneSiam SuperApp eCommerce platform. Collaborated with dev teams and 3rd-party vendors to troubleshoot and resolve issues. Supported a fast-changing eCommerce ecosystem across social media and marketplaces.</p>
+    </div>
+    <div class="exp-item">
+      <span class="exp-dot"></span>
+      <div class="exp-meta">
+        <div>
+          <p class="exp-role" data-en="IT Operation" data-th="IT Operation">IT Operation</p>
+          <p class="exp-company">Muze Innovation · Full-time</p>
+        </div>
+        <span class="exp-date">Oct 2019 – Dec 2020</span>
+      </div>
+      <p class="exp-desc" data-en="Supported inCart eCommerce platform including Birkenstock Thailand. Troubleshot technical issues, guided customers, documented procedures, and helped SMEs run fully integrated online stores." data-th="สนับสนุนแพลตฟอร์ม eCommerce inCart รวมถึง Birkenstock Thailand แก้ไขปัญหาเทคนิค จัดทำเอกสาร และช่วย SMEs รัน online store แบบครบวงจร">Supported inCart eCommerce platform including Birkenstock Thailand. Troubleshot technical issues, guided customers, documented procedures, and helped SMEs run fully integrated online stores.</p>
+    </div>
+    <div class="exp-item">
+      <span class="exp-dot"></span>
+      <div class="exp-meta">
+        <div>
+          <p class="exp-role" data-en="GIS / Data Analyst" data-th="GIS / Data Analyst">GIS / Data Analyst</p>
+          <p class="exp-company">Nielsen · Full-time</p>
+        </div>
+        <span class="exp-date">Jul 2017 – Oct 2019</span>
+      </div>
+      <p class="exp-desc" data-en="Examined, processed, and analyzed data to produce actionable reports. Drew polygons in Google Maps and exported to ArcGIS for spatial analysis. Managed multiple mapping assignments and supported interview teams." data-th="ตรวจสอบ ประมวลผล และวิเคราะห์ข้อมูลเพื่อจัดทำรายงาน วาด polygon ใน Google Maps และ export ไปยัง ArcGIS สำหรับการวิเคราะห์เชิงพื้นที่">Examined, processed, and analyzed data to produce actionable reports. Drew polygons in Google Maps and exported to ArcGIS for spatial analysis. Managed multiple mapping assignments and supported interview teams.</p>
     </div>
   </div>
 </section>
@@ -376,9 +466,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           your.email@gmail.com
         </a>
-        <a href="https://linkedin.com/in/yourname" target="_blank" class="contact-link">
+        <a href="https://linkedin.com/in/chananphat-chotpaisanporn-095a0516b" target="_blank" class="contact-link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-          linkedin.com/in/yourname
+          linkedin.com/in/chananphat-chotpaisanporn
         </a>
         <a href="https://github.com/yourname" target="_blank" class="contact-link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
@@ -443,6 +533,28 @@ function setLang(l) {
     }
   });
 }
+
+// Counter animation
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target);
+  const duration = 1800;
+  const step = target / (duration / 16);
+  let current = 0;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = Math.floor(current).toLocaleString();
+  }, 16);
+}
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.stat-num').forEach(animateCounter);
+      counterObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.stats-grid').forEach(el => counterObserver.observe(el));
 
 // Scroll reveal
 const observer = new IntersectionObserver(entries => {
