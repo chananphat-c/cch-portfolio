@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Name — Solution Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e8f0;
+    --muted: #7a7a8e;
+    --accent: #1a56db;
+    --accent2: #76a9fa;
+    --green: #34d399;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: var(--mono); font-size: 14px; color: var(--accent2); letter-spacing: 0.05em; }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .lang-toggle {
+    display: flex; gap: 2px;
+    background: var(--bg3); border-radius: 6px; padding: 3px;
+    border: 1px solid var(--border);
+  }
+  .lang-toggle button {
+    font-size: 11px; font-family: var(--mono);
+    padding: 3px 10px; border-radius: 4px; border: none; cursor: pointer;
+    background: transparent; color: var(--muted); transition: all 0.2s;
+  }
+  .lang-toggle button.active { background: var(--accent); color: #fff; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6rem 2rem 4rem;
+    max-width: 900px; margin: 0 auto;
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 13px; color: var(--accent2);
+    letter-spacing: 0.08em; margin-bottom: 1.25rem;
+    opacity: 0; animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .hero-name {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    opacity: 0; animation: fadeUp 0.6s 0.35s forwards;
+  }
+  .hero-title {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    color: var(--muted); font-weight: 300;
+    margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp 0.6s 0.5s forwards;
+  }
+  .typing-cursor { display: inline-block; width: 2px; height: 1.1em; background: var(--accent); vertical-align: text-bottom; animation: blink 1s infinite; }
+  .avail {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--green);
+    background: rgba(52,211,153,0.08);
+    border: 1px solid rgba(52,211,153,0.2);
+    border-radius: 99px; padding: 5px 14px;
+    margin-bottom: 2rem;
+    opacity: 0; animation: fadeUp 0.6s 0.65s forwards;
+  }
+  .avail-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  .hero-desc {
+    max-width: 560px; color: var(--muted); font-size: 15px; line-height: 1.8;
+    margin-bottom: 2rem;
+    opacity: 0; animation: fadeUp 0.6s 0.8s forwards;
+  }
+  .hero-cta {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.6s 0.95s forwards;
+  }
+  .btn-primary {
+    padding: 10px 24px; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    text-decoration: none; font-size: 14px; font-weight: 500;
+    transition: all 0.2s; border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-secondary {
+    padding: 10px 24px; border-radius: 8px;
+    background: transparent; color: var(--text);
+    text-decoration: none; font-size: 14px;
+    border: 1px solid var(--border2); transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent2); transform: translateY(-1px); }
+
+  /* SECTIONS */
+  section { max-width: 900px; margin: 0 auto; padding: 5rem 2rem; }
+  .section-label {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 200px; }
+  h2 { font-size: 1.75rem; font-weight: 500; margin-bottom: 1rem; }
+
+  /* SKILLS */
+  .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .skill-chip {
+    font-family: var(--mono); font-size: 12px;
+    padding: 5px 14px; border-radius: 6px;
+    background: var(--bg3); color: var(--text);
+    border: 1px solid var(--border);
+    transition: all 0.2s; cursor: default;
+  }
+  .skill-chip:hover { border-color: var(--accent); color: var(--accent2); transform: translateY(-2px); }
+
+  /* SERVICES */
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .service-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem;
+    transition: all 0.3s; cursor: default;
+  }
+  .service-card:hover { border-color: var(--accent); transform: translateY(-4px); background: var(--bg3); }
+  .service-icon { font-size: 1.5rem; margin-bottom: 1rem; }
+  .service-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+  .service-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* EXPERIENCE */
+  .timeline { position: relative; }
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 8px; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .exp-item {
+    padding-left: 2rem; margin-bottom: 2.5rem; position: relative;
+    opacity: 0; transform: translateX(-20px);
+    transition: all 0.5s;
+  }
+  .exp-item.visible { opacity: 1; transform: translateX(0); }
+  .exp-dot {
+    position: absolute; left: -5px; top: 8px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+  }
+  .exp-meta { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+  .exp-role { font-weight: 500; font-size: 15px; }
+  .exp-company { color: var(--accent2); font-size: 13px; }
+  .exp-date { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .exp-desc { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.7; }
+
+  /* CONTACT */
+  .contact-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2.5rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+  }
+  @media(max-width: 600px) { .contact-card { grid-template-columns: 1fr; } }
+  .contact-links { display: flex; flex-direction: column; gap: 12px; }
+  .contact-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 8px;
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); text-decoration: none; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent2); transform: translateX(4px); }
+  .contact-link svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+  .contact-form { display: flex; flex-direction: column; gap: 12px; }
+  .contact-form input, .contact-form textarea {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px;
+    color: var(--text); font-family: var(--sans); font-size: 14px;
+    outline: none; transition: border-color 0.2s; resize: none;
+  }
+  .contact-form input:focus, .contact-form textarea:focus { border-color: var(--accent); }
+  .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--muted); }
+  .contact-form textarea { height: 100px; }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* KEYFRAMES */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(20px); }
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes pulse {
+    0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.4)}
+    50%{box-shadow:0 0 0 6px rgba(52,211,153,0)}
+  }
+
+  /* GRID BG */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0; z-index: -1;
+    background-image: radial-gradient(circle at 30% 40%, rgba(26,86,219,0.08) 0%, transparent 60%),
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 60px 60px, 60px 60px;
+  }
+
+  @media(max-width: 600px) {
+    nav { padding: 0.75rem 1rem; }
+    .nav-links { gap: 1rem; }
+    section { padding: 3rem 1.25rem; }
+    .contact-card { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">YN.dev</span>
+  <div class="nav-links">
+    <a href="#about" data-en="About" data-th="เกี่ยวกับ">About</a>
+    <a href="#services" data-en="Services" data-th="บริการ">Services</a>
+    <a href="#experience" data-en="Experience" data-th="ประสบการณ์">Experience</a>
+    <a href="#contact" data-en="Contact" data-th="ติดต่อ">Contact</a>
+    <div class="lang-toggle">
+      <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="btn-th" onclick="setLang('th')">TH</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">// hello world</p>
+  <h1 class="hero-name">Your Name</h1>
+  <p class="hero-title">
+    <span id="typed-text"></span><span class="typing-cursor"></span>
+  </p>
+  <div class="avail">
+    <span class="avail-dot"></span>
+    <span data-en="Available for freelance projects" data-th="รับงาน freelance อยู่ตอนนี้">Available for freelance projects</span>
+  </div>
+  <p class="hero-desc" data-en="Solution Engineer with 5+ years bridging the gap between business needs and technical reality. I design systems that scale, integrate platforms that talk to each other, and turn complex requirements into clean solutions." data-th="Solution Engineer ประสบการณ์ 5+ ปี เชี่ยวชาญด้านการออกแบบระบบ เชื่อมต่อแพลตฟอร์ม และแปลงความต้องการทางธุรกิจให้กลายเป็นโซลูชันที่ใช้งานได้จริง">
+    Solution Engineer with 5+ years bridging the gap between business needs and technical reality. I design systems that scale, integrate platforms that talk to each other, and turn complex requirements into clean solutions.
+  </p>
+  <div class="hero-cta">
+    <a href="#contact" class="btn-primary" data-en="Hire me" data-th="ว่าจ้างฉัน">Hire me</a>
+    <a href="#experience" class="btn-secondary" data-en="View my work" data-th="ดูผลงาน">View my work</a>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<section id="about">
+  <p class="section-label reveal" data-en="Skills & stack" data-th="ทักษะและเครื่องมือ">Skills & stack</p>
+  <div class="skills-grid reveal">
+    <span class="skill-chip">Python</span>
+    <span class="skill-chip">Node.js</span>
+    <span class="skill-chip">REST API</span>
+    <span class="skill-chip">GraphQL</span>
+    <span class="skill-chip">System Integration</span>
+    <span class="skill-chip">Solution Architecture</span>
+    <span class="skill-chip">AWS</span>
+    <span class="skill-chip">Docker</span>
+    <span class="skill-chip">Kubernetes</span>
+    <span class="skill-chip">PostgreSQL</span>
+    <span class="skill-chip">MongoDB</span>
+    <span class="skill-chip">CI/CD</span>
+    <span class="skill-chip">Technical Consulting</span>
+    <span class="skill-chip">Microservices</span>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <p class="section-label reveal" data-en="What I do" data-th="บริการที่รับ">What I do</p>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-icon">⚡</div>
+      <h3 data-en="API Integration" data-th="API Integration">API Integration</h3>
+      <p data-en="Connect your systems, platforms, and third-party services. I make things that don't talk to each other, talk." data-th="เชื่อมต่อระบบและแพลตฟอร์มของคุณ ทั้ง third-party และ internal services ให้ทำงานร่วมกันได้อย่างราบรื่น">Connect your systems, platforms, and third-party services. I make things that don't talk to each other, talk.</p>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon">🏗️</div>
+      <h3 data-en="Solution Architecture" data-th="ออกแบบสถาปัตยกรรมระบบ">Solution Architecture</h3>
+      <p data-en="Design scalable, maintainable blueprints before the first line of code. Save months of refactoring." data-th="ออกแบบโครงสร้างระบบที่รองรับการเติบโต ก่อนที่จะเริ่มเขียน code สักบรรทัด">Design scalable, maintainable blueprints before the first line of code. Save months of refactoring.</p>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon">🔍</div>
+      <h3 data-en="Technical Consulting" data-th="ที่ปรึกษาด้านเทคนิค">Technical Consulting</h3>
+      <p data-en="Cut through the noise. Get clear, honest advice on tech decisions, vendor choices, and engineering strategy." data-th="ให้คำปรึกษาด้านเทคโนโลยี การเลือก vendor และกลยุทธ์ทางด้าน engineering ที่ตรงประเด็น">Cut through the noise. Get clear, honest advice on tech decisions, vendor choices, and engineering strategy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <p class="section-label reveal" data-en="Experience" data-th="ประสบการณ์">Experience</p>
+  <div class="timeline">
+    <div class="exp-item">
+      <span class="exp-dot"></span>
+      <div class="exp-meta">
+        <div>
+          <p class="exp-role" data-en="Solution Engineer" data-th="Solution Engineer">Solution Engineer</p>
+          <p class="exp-company">Company Name Co., Ltd.</p>
+        </div>
+        <span class="exp-date">2022 – Present</span>
+      </div>
+      <p class="exp-desc" data-en="Led end-to-end solution design for enterprise clients across fintech and logistics. Integrated 10+ third-party systems and reduced time-to-deploy by 40%." data-th="ออกแบบโซลูชันครบวงจรสำหรับลูกค้าองค์กร ทั้งในอุตสาหกรรม fintech และ logistics เชื่อมต่อระบบ third-party กว่า 10 ระบบ และลด time-to-deploy ได้ 40%">Led end-to-end solution design for enterprise clients across fintech and logistics. Integrated 10+ third-party systems and reduced time-to-deploy by 40%.</p>
+    </div>
+    <div class="exp-item">
+      <span class="exp-dot"></span>
+      <div class="exp-meta">
+        <div>
+          <p class="exp-role" data-en="Software Engineer" data-th="Software Engineer">Software Engineer</p>
+          <p class="exp-company">Previous Company Co., Ltd.</p>
+        </div>
+        <span class="exp-date">2019 – 2022</span>
+      </div>
+      <p class="exp-desc" data-en="Built backend services and APIs for fintech products serving 50,000+ users. Owned the payment integration layer end-to-end." data-th="พัฒนา backend services และ API สำหรับผลิตภัณฑ์ fintech ที่มีผู้ใช้งานกว่า 50,000 คน รับผิดชอบ payment integration ทั้งระบบ">Built backend services and APIs for fintech products serving 50,000+ users. Owned the payment integration layer end-to-end.</p>
+    </div>
+    <div class="exp-item">
+      <span class="exp-dot"></span>
+      <div class="exp-meta">
+        <div>
+          <p class="exp-role" data-en="Junior Developer" data-th="Junior Developer">Junior Developer</p>
+          <p class="exp-company">First Company Co., Ltd.</p>
+        </div>
+        <span class="exp-date">2018 – 2019</span>
+      </div>
+      <p class="exp-desc" data-en="Developed internal tools and automation scripts that saved the team 20+ hours per week." data-th="พัฒนา internal tools และ automation scripts ที่ช่วยประหยัดเวลาให้ทีมกว่า 20 ชั่วโมงต่อสัปดาห์">Developed internal tools and automation scripts that saved the team 20+ hours per week.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <p class="section-label reveal" data-en="Get in touch" data-th="ติดต่อ">Get in touch</p>
+  <div class="contact-card reveal">
+    <div>
+      <h2 style="margin-bottom:0.5rem" data-en="Let's work together" data-th="มาทำงานด้วยกัน">Let's work together</h2>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:1.5rem" data-en="Available for short-term and long-term freelance projects. Response within 24 hours." data-th="รับงาน freelance ทั้งระยะสั้นและยาว ตอบกลับภายใน 24 ชั่วโมง">Available for short-term and long-term freelance projects. Response within 24 hours.</p>
+      <div class="contact-links">
+        <a href="mailto:your.email@gmail.com" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          your.email@gmail.com
+        </a>
+        <a href="https://linkedin.com/in/yourname" target="_blank" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          linkedin.com/in/yourname
+        </a>
+        <a href="https://github.com/yourname" target="_blank" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          github.com/yourname
+        </a>
+      </div>
+    </div>
+    <div class="contact-form">
+      <input type="text" placeholder="Your name" data-ph-en="Your name" data-ph-th="ชื่อของคุณ">
+      <input type="email" placeholder="Email address" data-ph-en="Email address" data-ph-th="อีเมล">
+      <textarea placeholder="Tell me about your project..." data-ph-en="Tell me about your project..." data-ph-th="เล่าให้ฟังเกี่ยวกับโปรเจกต์ของคุณ..."></textarea>
+      <button class="btn-primary" data-en="Send message" data-th="ส่งข้อความ">Send message</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span data-en="Built with care · " data-th="สร้างด้วยความตั้งใจ · ">Built with care · </span>
+  <span id="footer-year"></span>
+</footer>
+
+<script>
+// Footer year
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+// Typing effect
+const titles = {
+  en: ['Solution Engineer', 'System Integrator', 'Technical Consultant', 'Problem Solver'],
+  th: ['Solution Engineer', 'นักออกแบบระบบ', 'ที่ปรึกษาด้านเทคนิค', 'นักแก้ปัญหา']
+};
+let lang = 'en';
+let titleIdx = 0, charIdx = 0, deleting = false;
+const typedEl = document.getElementById('typed-text');
+
+function type() {
+  const word = titles[lang][titleIdx];
+  if (!deleting) {
+    typedEl.textContent = word.slice(0, ++charIdx);
+    if (charIdx === word.length) { deleting = true; setTimeout(type, 2000); return; }
+  } else {
+    typedEl.textContent = word.slice(0, --charIdx);
+    if (charIdx === 0) {
+      deleting = false;
+      titleIdx = (titleIdx + 1) % titles[lang].length;
+    }
+  }
+  setTimeout(type, deleting ? 50 : 80);
+}
+type();
+
+// Language switch
+function setLang(l) {
+  lang = l;
+  titleIdx = 0; charIdx = 0; deleting = false;
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-th').classList.toggle('active', l === 'th');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = el.dataset['ph' + (l === 'en' ? 'En' : 'Th')] || el.placeholder;
+    } else {
+      el.textContent = el.dataset[l];
+    }
+  });
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal, .exp-item').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
