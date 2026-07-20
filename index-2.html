@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Interactive Resume</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+  :root{
+    --bg-main:#0f172a;
+    --bg-card:#1e293b;
+    --accent-sky:#38bdf8;
+    --accent-indigo:#818cf8;
+  }
+  *{ scroll-behavior:smooth; }
+  body{
+    background: radial-gradient(circle at 20% 0%, rgba(56,189,248,0.08), transparent 40%),
+                radial-gradient(circle at 80% 100%, rgba(129,140,248,0.10), transparent 40%),
+                var(--bg-main);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  .glow-border{
+    position:relative;
+    border:1px solid rgba(148,163,184,0.15);
+  }
+  .glow-border:hover{
+    border-color: rgba(56,189,248,0.5);
+    box-shadow: 0 0 25px rgba(56,189,248,0.25), 0 0 5px rgba(129,140,248,0.4) inset;
+    transform: translateY(-4px);
+  }
+  .card-transition{ transition: all 0.35s ease; }
+  .gradient-text{
+    background: linear-gradient(90deg, var(--accent-sky), var(--accent-indigo));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .profile-ring{
+    background: conic-gradient(from 90deg, var(--accent-sky), var(--accent-indigo), var(--accent-sky));
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .pulse-dot{
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; } 50%{ opacity:0.4; }
+  }
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-track{ background:var(--bg-main); }
+  ::-webkit-scrollbar-thumb{ background:var(--accent-indigo); border-radius:4px; }
+
+  .skill-chip{
+    transition: all 0.25s ease;
+  }
+  .skill-chip:hover{
+    background: rgba(56,189,248,0.15);
+    color:#38bdf8;
+    transform: scale(1.05);
+  }
+
+  .exp-item{
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .exp-item::before{
+    /* the connecting line */
+    content:'';
+    position:absolute;
+    left:0.35rem;
+    top:1rem;
+    bottom:-2rem;
+    width:2px;
+    background: linear-gradient(to bottom, rgba(56,189,248,0.5), rgba(129,140,248,0.05));
+  }
+  .exp-item:last-child::before{
+    display:none;
+  }
+  .exp-item::after{
+    /* the dot */
+    content:'';
+    position:absolute;
+    left:0;
+    top:0.7rem;
+    width:12px;height:12px;
+    border-radius:50%;
+    background: linear-gradient(135deg,var(--accent-sky),var(--accent-indigo));
+    box-shadow:0 0 12px rgba(56,189,248,0.7);
+  }
+
+  #controlBar.hide-for-capture{ display:none !important; }
+
+  .fade-in{
+    animation: fadeIn 0.6s ease both;
+  }
+  @keyframes fadeIn{
+    from{ opacity:0; transform: translateY(12px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .modal-backdrop{
+    background: rgba(15,23,42,0.75);
+    backdrop-filter: blur(4px);
+  }
+
+  .page{
+    animation: fadeIn 0.4s ease both;
+  }
+</style>
+</head>
+
+<body class="text-slate-200 min-h-screen">
+
+<!-- ============================================================
+     CONFIG DATA - Edit everything here, no need to touch markup
+============================================================= -->
+<script>
+  const resumeData = {
+    name: "Your Name",
+    title: "Solution Engineer & Customer Success",
+    profileImage: "profile.jpg",
+    contacts: [
+      { icon: "fa-solid fa-phone", label: "+66 00 000 0000", href: "tel:+660000000" },
+      { icon: "fa-solid fa-envelope", label: "youremail@example.com", href: "mailto:youremail@example.com" },
+      { icon: "fa-brands fa-linkedin", label: "linkedin.com/in/yourname", href: "https://linkedin.com/in/yourname" },
+      { icon: "fa-solid fa-location-dot", label: "Bangkok, Thailand", href: "#" }
+    ],
+
+    achievements: [
+      { emoji: "🚀", value: "9", label: "Years in Tech" },
+      { emoji: "🏢", value: "5", label: "Enterprise Projects" },
+      { emoji: "📈", value: "30", label: "SME Projects" }
+    ],
+
+    skillCategories: [
+      {
+        emoji: "⚙️",
+        title: "System & Solution Engineering",
+        skills: ["Requirement Analysis", "System Integration", "Solution Design", "Technical Documentation", "Implementation & Deployment"]
+      },
+      {
+        emoji: "🤝",
+        title: "Customer Success & Support",
+        skills: ["Client Onboarding", "Relationship Management", "Technical Support", "Training & Enablement", "Issue Resolution"]
+      },
+      {
+        emoji: "💻",
+        title: "Tech Stack",
+        skills: ["Python", "SQL", "JavaScript", "Git", "API Integration"]
+      },
+      {
+        emoji: "🗂️",
+        title: "Operation Management",
+        skills: ["Process Improvement", "SOP Development", "Resource Planning", "Cross-team Coordination", "KPI Tracking"]
+      }
+    ],
+
+    experienceGroups: [
+      {
+        company: "Factorytalk",
+        positions: [
+          {
+            role: "Solution Engineer",
+            period: "Apr 2024 - Present",
+            location: "Hybrid, Bangkok",
+            bullets: [
+              "Designed and implemented end-to-end solution architecture for enterprise clients, ensuring alignment with business requirements.",
+              "Led technical discovery sessions with stakeholders to translate business needs into scalable system solutions.",
+              "Collaborated cross-functionally with engineering and product teams to deliver integrations via REST APIs.",
+              "Provided pre-sales technical support, including solution demos, proof-of-concepts, and technical proposals.",
+              "Monitored post-implementation performance and drove continuous improvement initiatives for deployed systems."
+            ],
+            regions: ["Thailand", "Indonesia", "Philippines", "Vietnam"]
+          }
+        ]
+      },
+      {
+        company: "SENESTIA",
+        positions: [
+          {
+            role: "Customer Success & Support",
+            period: "May 2023 - Nov 2023",
+            location: "Hybrid, Thailand",
+            bullets: [
+              "Managed onboarding process for new customers, ensuring smooth adoption of the platform.",
+              "Resolved technical support tickets, maintaining high customer satisfaction and retention rates.",
+              "Built strong client relationships through proactive communication and regular account check-ins.",
+              "Coordinated with internal teams to escalate and resolve complex technical issues.",
+              "Created training materials and conducted product walkthroughs for new users."
+            ],
+            regions: ["Thailand"] // TODO: confirm actual countries covered in this role
+          }
+        ]
+      },
+      {
+        company: "Muze Innovation",
+        positions: [
+          {
+            role: "Technical Operation Officer",
+            period: "Jan 2021 - May 2023",
+            location: "Bangkok Metropolitan Area · Remote",
+            tagline: "⭐️ Enterprise eCommerce Support | ONESIAM APPs",
+            bullets: [
+              "🖥 1st & 2nd level support",
+              "🔍 Troubleshoot & resolve app issues",
+              "🤝 Collaborate with dev teams & 3rd-party vendors",
+              "📣 Guide customers & provide timely feedback",
+              "⚡ Support fast-changing eCommerce ecosystem (social media & marketplaces)",
+              "🏆 Enhanced inCart → OneSiam SuperApp backend, keeping online stores running smoothly"
+            ],
+            regions: ["Thailand"] // TODO: confirm actual countries covered in this role
+          },
+          {
+            role: "IT Operation",
+            period: "Oct 2019 - Dec 2020",
+            location: "Thailand · On-site",
+            tagline: "⭐️ eCommerce Support | InCart Website",
+            bullets: [
+              "🔧 Troubleshoot & resolve technical issues",
+              "🛠 Guide customers through problem resolution",
+              "📣 Provide timely feedback and follow up to ensure resolution",
+              "📚 Document procedures & test new features",
+              "📈 Track progress in Confluence & JIRA",
+              "💡 Support inCart eCommerce platform, including Birkenstock Thailand and other brands",
+              "🏆 Helped SMEs and medium-sized businesses run fully integrated online store"
+            ],
+            regions: ["Thailand"] // TODO: confirm actual countries covered in this role
+          }
+        ]
+      },
+      {
+        company: "Nielsen",
+        positions: [
+          {
+            role: "GIS / Data Analyst",
+            period: "Jul 2017 - Oct 2019",
+            location: "Bangkok, Thailand · On-site",
+            tagline: "⭐️ GIS / Data Analyst",
+            bullets: [
+              "🗂 Examine, process, and analyze data to produce actionable reports",
+              "📍 Draw polygons in Google Maps and export to ArcGIS for spatial analysis",
+              "📊 Manage multiple mapping assignments and support interview teams",
+              "🖥 Assist staff with data entry and ensure data accuracy"
+            ],
+            regions: ["Thailand"] // TODO: confirm actual countries covered in this role
+          }
+        ]
+      }
+    ],
+
+    education: [
+      {
+        school: "Kasem Bundit University",
+        degree: "Bachelor of Business Administration (BBA), Business Computer",
+        period: "Jun 2013 – Apr 2017",
+        note: ""
+      },
+      {
+        school: "Guangxi Teachers College",
+        degree: "Bachelor's Degree, Chinese Language Course",
+        period: "May 2014 – Jun 2014",
+        note: "Grade: A · Exchange Program & Culture Learning Course"
+      }
+    ],
+
+    certifications: [
+      {
+        title: "MasterControl Essentials (Pre-Work) Learning Path Completion Certificate",
+        issuer: "MasterControl",
+        issued: "Issued May 2025",
+        credentialUrl: ""
+      }
+    ]
+  };
+</script>
+
+<!-- ============================================================
+     CONTROL BAR
+============================================================= -->
+<div id="controlBar" class="sticky top-0 z-40 backdrop-blur bg-slate-950/70 border-b border-slate-800">
+  <div class="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-sky-400 pulse-dot"></span>
+      <span class="text-sm text-slate-400">Interactive Resume</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="viewAnalyticsBtn"
+        class="flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-indigo-400 transition">
+        <i class="fa-solid fa-chart-line text-indigo-400"></i>
+        <span class="hidden sm:inline">Visitors</span>
+        <span id="visitorCountBadge" class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">0</span>
+      </button>
+      <button id="downloadBtn"
+        class="flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-indigo-500 hover:opacity-90 shadow-lg shadow-sky-500/20 transition">
+        <i class="fa-solid fa-download"></i>
+        <span class="hidden sm:inline">Download as Image</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 1 — MAIN RESUME
+============================================================= -->
+<div id="page1" class="page">
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div id="resumeCard" class="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 shadow-2xl shadow-black/40 border border-slate-800">
+
+    <!-- HEADER -->
+    <header class="flex flex-col sm:flex-row items-center sm:items-start gap-6 fade-in">
+      <div class="relative shrink-0">
+        <div class="profile-ring w-32 h-32 rounded-full p-1">
+          <img id="profileImg" src="profile.jpg" alt="Profile Picture"
+            onerror="this.onerror=null;this.src='https://api.dicebear.com/7.x/initials/svg?seed=Profile&backgroundColor=1e293b&textColor=38bdf8';"
+            class="w-full h-full rounded-full object-cover border-4 border-[var(--bg-card)]" />
+        </div>
+      </div>
+
+      <div class="text-center sm:text-left flex-1">
+        <h1 id="nameHeading" class="text-3xl sm:text-4xl font-extrabold gradient-text">Name Placeholder</h1>
+        <p id="titleHeading" class="text-slate-400 text-lg mt-1 font-medium">Title Placeholder</p>
+
+        <div id="contactList" class="flex flex-wrap justify-center sm:justify-start gap-3 mt-4"></div>
+      </div>
+    </header>
+
+    <!-- ACHIEVEMENTS -->
+    <section class="mt-10">
+      <h2 class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-trophy text-sky-400"></i> Key Achievements
+      </h2>
+      <div id="achievementsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="mt-10">
+      <h2 class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-layer-group text-indigo-400"></i> Skills & Stack
+      </h2>
+      <div id="skillsGrid" class="grid grid-cols-2 lg:grid-cols-5 gap-3"></div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section class="mt-10">
+      <h2 class="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
+        <i class="fa-solid fa-briefcase text-sky-400"></i> Experience
+      </h2>
+      <div id="experienceList" class="space-y-8"></div>
+    </section>
+
+    <!-- LINK TO EDUCATION PAGE -->
+    <section class="mt-10">
+      <button id="goToEduBtn"
+        class="w-full flex items-center justify-between gap-3 bg-slate-900/60 hover:bg-slate-800 border border-slate-700 hover:border-sky-400 rounded-2xl px-5 py-4 card-transition text-left">
+        <span class="flex items-center gap-3">
+          <span class="text-2xl">🎓</span>
+          <span>
+            <span class="block font-semibold text-slate-100">Education & Certifications</span>
+            <span class="block text-xs text-slate-400 mt-0.5">See academic background and licenses</span>
+          </span>
+        </span>
+        <i class="fa-solid fa-arrow-right text-sky-400"></i>
+      </button>
+    </section>
+
+    <footer class="mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-500">
+      Generated with an interactive resume builder · <span id="footerYear"></span>
+    </footer>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     PAGE 2 — EDUCATION & CERTIFICATIONS (simple, uncluttered)
+============================================================= -->
+<div id="page2" class="page hidden">
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div id="eduCard" class="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 shadow-2xl shadow-black/40 border border-slate-800">
+
+    <button id="backToHomeBtn"
+      class="flex items-center gap-2 text-sm text-slate-300 hover:text-sky-400 transition mb-8">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Back to Resume</span>
+    </button>
+
+    <header class="mb-10">
+      <h1 class="text-2xl sm:text-3xl font-extrabold gradient-text">Education & Certifications</h1>
+      <p class="text-slate-400 text-sm mt-1">Academic background and professional licenses</p>
+    </header>
+
+    <!-- EDUCATION -->
+    <section>
+      <h2 class="text-lg font-bold text-slate-100 mb-5 flex items-center gap-2">
+        <i class="fa-solid fa-graduation-cap text-sky-400"></i> Education
+      </h2>
+      <div id="educationList" class="space-y-5"></div>
+    </section>
+
+    <!-- CERTIFICATIONS -->
+    <section class="mt-10">
+      <h2 class="text-lg font-bold text-slate-100 mb-5 flex items-center gap-2">
+        <i class="fa-solid fa-certificate text-indigo-400"></i> Licenses & Certifications
+      </h2>
+      <div id="certificationsList" class="space-y-5"></div>
+    </section>
+
+    <footer class="mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-500">
+      Generated with an interactive resume builder · <span id="footerYear2"></span>
+    </footer>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     VISITOR ANALYTICS MODAL
+============================================================= -->
+<div id="analyticsModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop px-4">
+  <div class="bg-[var(--bg-card)] w-full max-w-lg rounded-2xl border border-slate-700 shadow-2xl p-6 max-h-[85vh] overflow-y-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+        <i class="fa-solid fa-eye text-sky-400"></i> Visitor Log
+      </h3>
+      <button id="closeModalBtn" class="text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+    <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+      This log is stored in <span class="text-slate-300 font-medium">this browser's local storage</span> only.
+      It records visits made from this device/browser — it is not a shared, cross-visitor server log.
+    </p>
+    <div class="flex items-center justify-between bg-slate-900/60 rounded-lg px-4 py-3 mb-4 border border-slate-800">
+      <span class="text-sm text-slate-400">Total Recorded Visits</span>
+      <span id="modalTotalCount" class="text-2xl font-bold gradient-text">0</span>
+    </div>
+    <div id="visitorLogList" class="space-y-3"></div>
+    <button id="clearLogBtn" class="mt-4 w-full text-xs text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-400/60 rounded-lg py-2 transition">
+      Clear Local Log
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     RENDER SCRIPT
+============================================================= -->
+<script>
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+  // ---------- Header ----------
+  document.getElementById('profileImg').src = resumeData.profileImage;
+  document.getElementById('nameHeading').textContent = resumeData.name;
+  document.getElementById('titleHeading').textContent = resumeData.title;
+
+  const contactList = document.getElementById('contactList');
+  resumeData.contacts.forEach(c => {
+    const a = document.createElement('a');
+    a.href = c.href;
+    a.target = c.href.startsWith('http') ? '_blank' : '_self';
+    a.rel = 'noopener noreferrer';
+    a.className = "card-transition flex items-center gap-2 text-sm bg-slate-900/60 hover:bg-slate-800 border border-slate-700 hover:border-sky-400 text-slate-300 hover:text-sky-300 px-3 py-1.5 rounded-full";
+    a.innerHTML = `<i class="${c.icon} text-sky-400"></i><span>${c.label}</span>`;
+    contactList.appendChild(a);
+  });
+
+  // ---------- Achievements ----------
+  const achievementsGrid = document.getElementById('achievementsGrid');
+  resumeData.achievements.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = "glow-border card-transition bg-slate-900/60 rounded-2xl p-6 text-center";
+
+    // Split the value into a numeric part (to animate) and a suffix (e.g. "+", "%")
+    const match = String(item.value).match(/^(\d+)(.*)$/);
+    const numericTarget = match ? parseInt(match[1], 10) : null;
+    const suffix = match ? match[2] : '';
+    const counterId = `counter-${idx}`;
+
+    div.innerHTML = `
+      <div class="text-4xl mb-2">${item.emoji}</div>
+      <div class="text-3xl font-extrabold gradient-text">
+        <span id="${counterId}">${numericTarget !== null ? '0' : item.value}</span>${numericTarget !== null ? suffix : ''}
+      </div>
+      <div class="text-slate-400 text-sm mt-1">${item.label}</div>
+    `;
+    achievementsGrid.appendChild(div);
+
+    if (numericTarget !== null) {
+      animateCounter(counterId, numericTarget, 1400);
+    }
+  });
+
+  function animateCounter(elementId, target, duration) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const startTime = performance.now();
+
+    function tick(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      // ease-out for a natural "settling" feel
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+      el.textContent = current;
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.textContent = target;
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- Skills ----------
+  const skillsGrid = document.getElementById('skillsGrid');
+  const SKILLS_PREVIEW_COUNT = 2;
+
+  function chipHTML(skill) {
+    return `<span class="skill-chip text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700">${skill}</span>`;
+  }
+
+  resumeData.skillCategories.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = "glow-border card-transition bg-slate-900/60 rounded-2xl p-4";
+
+    const visibleSkills = cat.skills.slice(0, SKILLS_PREVIEW_COUNT);
+    const extraSkills = cat.skills.slice(SKILLS_PREVIEW_COUNT);
+
+    div.innerHTML = `
+      <h3 class="font-semibold text-slate-100 mb-3 flex items-center gap-2 text-sm">
+        <span class="text-lg">${cat.emoji}</span> <span class="leading-tight">${cat.title}</span>
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        ${visibleSkills.map(chipHTML).join('')}
+      </div>
+      ${extraSkills.length ? `
+        <div class="skill-extra hidden flex-wrap gap-2 mt-2">
+          ${extraSkills.map(chipHTML).join('')}
+        </div>
+        <button type="button" class="skill-toggle-btn text-xs text-sky-400 hover:text-sky-300 mt-2 flex items-center gap-1">
+          <span class="toggle-label">+${extraSkills.length} more</span>
+          <i class="fa-solid fa-chevron-down text-[10px] toggle-icon transition-transform"></i>
+        </button>
+      ` : ''}
+    `;
+
+    const toggleBtn = div.querySelector('.skill-toggle-btn');
+    if (toggleBtn) {
+      const extraBox = div.querySelector('.skill-extra');
+      const label = toggleBtn.querySelector('.toggle-label');
+      const icon = toggleBtn.querySelector('.toggle-icon');
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = extraBox.classList.contains('hidden');
+        if (isHidden) {
+          extraBox.classList.remove('hidden');
+          extraBox.classList.add('flex');
+          label.textContent = 'Show less';
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          extraBox.classList.add('hidden');
+          extraBox.classList.remove('flex');
+          label.textContent = `+${extraSkills.length} more`;
+          icon.style.transform = 'rotate(0deg)';
+        }
+      });
+    }
+
+    skillsGrid.appendChild(div);
+  });
+
+  // ---------- Experience (grouped by company; a company can have multiple positions) ----------
+  const experienceList = document.getElementById('experienceList');
+  const EXPERIENCE_PREVIEW_COUNT = 3;
+
+  function buildPositionHTML(pos, isFirst) {
+    return `
+      <div class="${isFirst ? '' : 'mt-5 pt-5 border-t border-slate-800'}">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+          <h4 class="font-bold text-slate-100">${pos.role}</h4>
+          <div class="text-xs text-slate-400 text-left sm:text-right shrink-0">
+            <div>${pos.period}</div>
+            <div>${pos.location}</div>
+          </div>
+        </div>
+        ${pos.tagline ? `<p class="text-sm text-slate-300 font-medium mt-2">${pos.tagline}</p>` : ''}
+        <ul class="mt-3 space-y-2">
+          ${pos.bullets.map(b => `
+            <li class="text-sm text-slate-300 flex gap-2">
+              <i class="fa-solid fa-circle-check text-indigo-400 mt-1 text-[10px] shrink-0"></i>
+              <span>${b}</span>
+            </li>`).join('')}
+        </ul>
+        ${pos.regions && pos.regions.length ? `
+          <div class="mt-4 pt-3 border-t border-slate-800/60">
+            <p class="text-xs text-slate-500 mb-2 flex items-center gap-1">
+              <i class="fa-solid fa-earth-asia text-sky-400"></i> Projects Covered
+            </p>
+            <div class="flex flex-wrap gap-2">
+              ${pos.regions.map(r => `<span class="skill-chip text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700">🌏 ${r}</span>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  function buildCompanyCard(group) {
+    const div = document.createElement('div');
+    div.className = "exp-item";
+    div.innerHTML = `
+      <div class="glow-border card-transition bg-slate-900/60 rounded-2xl p-5">
+        <p class="text-sky-400 text-sm font-semibold">${group.company}</p>
+        ${group.positions.map((pos, i) => buildPositionHTML(pos, i === 0)).join('')}
+      </div>
+    `;
+    return div;
+  }
+
+  const visibleGroups = resumeData.experienceGroups.slice(0, EXPERIENCE_PREVIEW_COUNT);
+  const extraGroups = resumeData.experienceGroups.slice(EXPERIENCE_PREVIEW_COUNT);
+
+  visibleGroups.forEach(group => experienceList.appendChild(buildCompanyCard(group)));
+
+  if (extraGroups.length) {
+    const extraWrapper = document.createElement('div');
+    extraWrapper.id = "extraExperienceWrapper";
+    extraWrapper.className = "hidden space-y-8 mt-8";
+    extraGroups.forEach(group => extraWrapper.appendChild(buildCompanyCard(group)));
+    experienceList.after(extraWrapper);
+
+    const toggleWrapper = document.createElement('div');
+    toggleWrapper.className = "mt-6 text-center";
+    toggleWrapper.innerHTML = `
+      <button id="experienceToggleBtn" type="button"
+        class="text-sm text-sky-400 hover:text-sky-300 border border-slate-700 hover:border-sky-400 rounded-full px-5 py-2 card-transition inline-flex items-center gap-2">
+        <span class="toggle-label">View ${extraGroups.length} more experience${extraGroups.length > 1 ? 's' : ''}</span>
+        <i class="fa-solid fa-chevron-down text-xs toggle-icon transition-transform"></i>
+      </button>
+    `;
+    extraWrapper.after(toggleWrapper);
+
+    const toggleBtn = document.getElementById('experienceToggleBtn');
+    const label = toggleBtn.querySelector('.toggle-label');
+    const icon = toggleBtn.querySelector('.toggle-icon');
+    toggleBtn.addEventListener('click', () => {
+      const isHidden = extraWrapper.classList.contains('hidden');
+      if (isHidden) {
+        extraWrapper.classList.remove('hidden');
+        label.textContent = 'Show less';
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        extraWrapper.classList.add('hidden');
+        label.textContent = `View ${extraGroups.length} more experience${extraGroups.length > 1 ? 's' : ''}`;
+        icon.style.transform = 'rotate(0deg)';
+        extraWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  }
+
+  // ---------- Education (page 2, kept simple/clean on purpose) ----------
+  document.getElementById('footerYear2').textContent = new Date().getFullYear();
+  const educationList = document.getElementById('educationList');
+  (resumeData.education || []).forEach(edu => {
+    const div = document.createElement('div');
+    div.className = "bg-slate-900/50 border border-slate-800 rounded-xl px-5 py-4";
+    div.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
+        <div>
+          <h3 class="font-semibold text-slate-100">${edu.school}</h3>
+          <p class="text-slate-400 text-sm mt-0.5">${edu.degree}</p>
+          ${edu.note ? `<p class="text-slate-500 text-xs mt-1">${edu.note}</p>` : ''}
+        </div>
+        <div class="text-xs text-slate-500 shrink-0 sm:text-right">${edu.period}</div>
+      </div>
+    `;
+    educationList.appendChild(div);
+  });
+
+  // ---------- Certifications (page 2) ----------
+  const certificationsList = document.getElementById('certificationsList');
+  (resumeData.certifications || []).forEach(cert => {
+    const div = document.createElement('div');
+    div.className = "bg-slate-900/50 border border-slate-800 rounded-xl px-5 py-4";
+    div.innerHTML = `
+      <h3 class="font-semibold text-slate-100">${cert.title}</h3>
+      <p class="text-slate-400 text-sm mt-0.5">${cert.issuer}${cert.issued ? ' · ' + cert.issued : ''}</p>
+      ${cert.credentialUrl ? `<a href="${cert.credentialUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-sky-400 hover:text-sky-300 mt-2"><i class="fa-solid fa-arrow-up-right-from-square"></i> Show credential</a>` : ''}
+    `;
+    certificationsList.appendChild(div);
+  });
+</script>
+
+<!-- ============================================================
+     PAGE NAVIGATION (Resume <-> Education & Certifications)
+============================================================= -->
+<script>
+  function goToPage(pageId) {
+    document.getElementById('page1').classList.add('hidden');
+    document.getElementById('page2').classList.add('hidden');
+    document.getElementById(pageId).classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('goToEduBtn').addEventListener('click', () => goToPage('page2'));
+  document.getElementById('backToHomeBtn').addEventListener('click', () => goToPage('page1'));
+</script>
+
+<!-- ============================================================
+     HR EXPORT FEATURE (html2canvas)
+============================================================= -->
+<script>
+  document.getElementById('downloadBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('downloadBtn');
+    const controlBar = document.getElementById('controlBar');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span class="hidden sm:inline">Generating...</span>';
+
+    controlBar.classList.add('hide-for-capture');
+    await new Promise(r => setTimeout(r, 100)); // let layout settle
+
+    try {
+      const isPage2 = !document.getElementById('page2').classList.contains('hidden');
+      const target = document.getElementById(isPage2 ? 'eduCard' : 'resumeCard');
+      const canvas = await html2canvas(target, {
+        backgroundColor: '#0f172a',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
+      });
+
+      const link = document.createElement('a');
+      const safeName = (resumeData.name || 'resume').replace(/\s+/g, '_');
+      const suffix = isPage2 ? 'Education' : 'Resume';
+      link.download = `${safeName}_${suffix}.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert('Sorry, something went wrong while generating the image. Please try again.');
+    } finally {
+      controlBar.classList.remove('hide-for-capture');
+      btn.innerHTML = original;
+    }
+  });
+</script>
+
+<!-- ============================================================
+     VISITOR ANALYTICS TRACKER
+     Note: localStorage is per-browser/per-device. This tracker
+     records visits made FROM this browser, it cannot aggregate
+     visits made by other people on their own devices unless a
+     real backend/database is added later.
+============================================================= -->
+<script>
+  const VISITOR_LOG_KEY = 'resume_visitor_log_v1';
+  const MAX_LOG_ENTRIES = 25;
+
+  function getVisitorLog() {
+    try {
+      return JSON.parse(localStorage.getItem(VISITOR_LOG_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveVisitorLog(log) {
+    localStorage.setItem(VISITOR_LOG_KEY, JSON.stringify(log));
+  }
+
+  function updateBadge() {
+    const log = getVisitorLog();
+    document.getElementById('visitorCountBadge').textContent = log.length;
+    document.getElementById('modalTotalCount').textContent = log.length;
+  }
+
+  async function recordVisit() {
+    let meta = {
+      ip: 'Unknown',
+      city: 'Unknown',
+      country: 'Unknown',
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      if (res.ok) {
+        const data = await res.json();
+        meta.ip = data.ip || 'Unknown';
+        meta.city = data.city || 'Unknown';
+        meta.country = data.country_name || 'Unknown';
+      }
+    } catch (err) {
+      console.warn('IP lookup unavailable, logging with limited info.', err);
+    }
+
+    const log = getVisitorLog();
+    log.unshift(meta);
+    if (log.length > MAX_LOG_ENTRIES) log.length = MAX_LOG_ENTRIES;
+    saveVisitorLog(log);
+    updateBadge();
+  }
+
+  function renderVisitorLog() {
+    const log = getVisitorLog();
+    const container = document.getElementById('visitorLogList');
+    container.innerHTML = '';
+
+    if (log.length === 0) {
+      container.innerHTML = '<p class="text-sm text-slate-500 text-center py-4">No visits recorded yet.</p>';
+      return;
+    }
+
+    log.forEach(entry => {
+      const date = new Date(entry.timestamp);
+      const div = document.createElement('div');
+      div.className = "bg-slate-900/60 border border-slate-800 rounded-lg px-4 py-3 text-sm flex items-center justify-between gap-3";
+      div.innerHTML = `
+        <div>
+          <div class="text-slate-200 font-medium"><i class="fa-solid fa-location-dot text-sky-400 mr-1"></i>${entry.city}, ${entry.country}</div>
+          <div class="text-slate-500 text-xs mt-0.5">IP: ${entry.ip}</div>
+        </div>
+        <div class="text-xs text-slate-400 text-right shrink-0">
+          ${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  // Modal controls
+  const modal = document.getElementById('analyticsModal');
+  document.getElementById('viewAnalyticsBtn').addEventListener('click', () => {
+    renderVisitorLog();
+    updateBadge();
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  });
+  document.getElementById('closeModalBtn').addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  });
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  });
+  document.getElementById('clearLogBtn').addEventListener('click', () => {
+    if (confirm('Clear the local visitor log? This cannot be undone.')) {
+      localStorage.removeItem(VISITOR_LOG_KEY);
+      renderVisitorLog();
+      updateBadge();
+    }
+  });
+
+  // Fire on load
+  updateBadge();
+  recordVisit();
+</script>
+
+</body>
+</html>
